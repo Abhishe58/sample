@@ -61,37 +61,42 @@
     console.warn(err);
   }
   </script> -->
-  <p id="location">Getting location...</p>
-<ul id="hospitalList"></ul>
-<button onclick="sendEmergencySMS()">Send Emergency SMS</button>
+<button onclick="getLocation()">Get Location</button>
+<p id="location">Waiting for location...</p>
+
 <script>
-  let currentLat = null;
-let currentLon = null;
-
-function success(position) {
-  currentLat = position.coords.latitude;
-  currentLon = position.coords.longitude;
-
-  document.getElementById("location").textContent = `Latitude: ${currentLat}, Longitude: ${currentLon}`;
-
-  // Same Overpass API fetch code here...
-
-}
-
-// Emergency SMS Function
-function sendEmergencySMS() {
-  if (currentLat && currentLon) {
-    const message = `Emergency! I need help.\nMy location:\nLatitude: ${currentLat}, Longitude: ${currentLon}`;
-    const phoneNumber = "1234567890"; // Replace with emergency contact
-
-    // Opens the SMS app with prefilled message
-    const smsLink = `sms:${phoneNumber}?body=${encodeURIComponent(message)}`;
-    window.location.href = smsLink;
-  } else {
-    alert("Location not available yet.");
+  function getLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition, showError);
+    } else {
+      document.getElementById("location").textContent = "Geolocation not supported.";
+    }
   }
-}
 
+  function showPosition(position) {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+    document.getElementById("location").textContent = `Latitude: ${lat}, Longitude: ${lon}`;
+  }
+
+  function showError(error) {
+    let msg = "Error: ";
+    switch (error.code) {
+      case error.PERMISSION_DENIED:
+        msg += "Permission denied";
+        break;
+      case error.POSITION_UNAVAILABLE:
+        msg += "Position unavailable";
+        break;
+      case error.TIMEOUT:
+        msg += "Request timed out";
+        break;
+      default:
+        msg += "Unknown error";
+    }
+    document.getElementById("location").textContent = msg;
+  }
 </script>
+
 </body>
 </html>
