@@ -4,7 +4,7 @@
   <title>Nearby Hospitals</title>
 </head>
 <body>
-  <a href="sms:+919510954023?body=Hello">Send Emergency SMS</a>
+<!--   <a href="sms:+919510954023?body=Hello">Send Emergency SMS</a>
   <h2>Your Location:</h2>
   <p id="location">Getting location...</p>
 
@@ -60,6 +60,38 @@
     document.getElementById("location").textContent = "Error getting location.";
     console.warn(err);
   }
-  </script>
+  </script> -->
+  <p id="location">Getting location...</p>
+<ul id="hospitalList"></ul>
+<button onclick="sendEmergencySMS()">Send Emergency SMS</button>
+<script>
+  let currentLat = null;
+let currentLon = null;
+
+function success(position) {
+  currentLat = position.coords.latitude;
+  currentLon = position.coords.longitude;
+
+  document.getElementById("location").textContent = `Latitude: ${currentLat}, Longitude: ${currentLon}`;
+
+  // Same Overpass API fetch code here...
+
+}
+
+// Emergency SMS Function
+function sendEmergencySMS() {
+  if (currentLat && currentLon) {
+    const message = `Emergency! I need help.\nMy location:\nLatitude: ${currentLat}, Longitude: ${currentLon}`;
+    const phoneNumber = "1234567890"; // Replace with emergency contact
+
+    // Opens the SMS app with prefilled message
+    const smsLink = `sms:${phoneNumber}?body=${encodeURIComponent(message)}`;
+    window.location.href = smsLink;
+  } else {
+    alert("Location not available yet.");
+  }
+}
+
+</script>
 </body>
 </html>
