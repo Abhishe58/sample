@@ -75,6 +75,7 @@
 <p id="location">Waiting for location...</p>
 
 <script>
+  alert("done");
   let currentLat = null;
   let currentLon = null;
 
@@ -112,9 +113,9 @@
 
   function sendEmergencySMS() {
     if (currentLat !== null && currentLon !== null) {
-      const message = `Emergency! I need help.\nMy location:\nLatitude: ${currentLat}, Longitude: ${currentLon}`;
-      const phoneNumber = "1234567890"; // Replace with real emergency contact
-
+      const message = `Hello, \nMy location:\nLatitude: ${currentLat}, Longitude: ${currentLon}`;
+      const phoneNumber = "+919510954023"; // Replace with real emergency contact
+      
       const smsLink = `sms:${phoneNumber}?body=${encodeURIComponent(message)}`;
       window.location.href = smsLink;
     } else {
