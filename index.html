@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nearby Hospitals</title>
+</head>
+<body>
+  <h2>Your Location:</h2>
+  <p id="location">Getting location...</p>
+
+  <h2>Nearby Hospitals:</h2>
+  <ul id="hospitalList"></ul>
+
+  <script>
+    // Step 1: Get user location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(success, error);
+    } else {
+      document.getElementById("location").textContent = "Geolocation not supported.";
+    }
+
+    function success(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      // Step 2: Show lat/lon
+      document.getElementById("location").textContent = `Latitude: ${lat}, Longitude: ${lon}`;
+
+      // Step 3: Call Overpass API
+      const delta = 0.02;
+      const overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json];node["amenity"="hospital"](${lat - delta},${lon - delta},${lat + delta},${lon + delta});out;`;
+
+      fetch(overpassUrl)
+        .then(res => res.json())
+        .then(data => {
+          const hospitalList = document.getElementById("hospitalList");
+          if (data.elements.length === 0) {
+            hospitalList.innerHTML = "<li>No hospitals found nearby.</li>";
+          } else {
+            data.elements.forEach(hospital => {
+              const name = hospital.tags && hospital.tags.name ? hospital.tags.name : "Unnamed Hospital";
+              const phone = hospital.tags && hospital.tags.phone ? hospital.tags.phone : "Phone not available";
+              const li = document.createElement("li");
+              li.textContent = `${name} - ${phone}`;
+              hospitalList.appendChild(li);
+            });
+          }
+        })
+        .catch(err => {
+          document.getElementById("hospitalList").innerHTML = "<li>Error fetching hospitals.</li>";
+          console.error(err);
+        });
+    }
+
+    function error(err) {
+      document.getElementById("location").textContent = "Error getting location.";
+      console.warn(err);
+    }
+  </script>
+</body>
+</html>
