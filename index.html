@@ -61,10 +61,23 @@
     console.warn(err);
   }
   </script> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Emergency SMS with Location</title>
+</head>
+<body>
+
 <button onclick="getLocation()">Get Location</button>
+<button onclick="sendEmergencySMS()">Send Emergency SMS</button>
+
 <p id="location">Waiting for location...</p>
 
 <script>
+  let currentLat = null;
+  let currentLon = null;
+
   function getLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition, showError);
@@ -74,9 +87,9 @@
   }
 
   function showPosition(position) {
-    const lat = position.coords.latitude;
-    const lon = position.coords.longitude;
-    document.getElementById("location").textContent = `Latitude: ${lat}, Longitude: ${lon}`;
+    currentLat = position.coords.latitude;
+    currentLon = position.coords.longitude;
+    document.getElementById("location").textContent = `Latitude: ${currentLat}, Longitude: ${currentLon}`;
   }
 
   function showError(error) {
@@ -96,7 +109,18 @@
     }
     document.getElementById("location").textContent = msg;
   }
-</script>
 
+  function sendEmergencySMS() {
+    if (currentLat !== null && currentLon !== null) {
+      const message = `Emergency! I need help.\nMy location:\nLatitude: ${currentLat}, Longitude: ${currentLon}`;
+      const phoneNumber = "1234567890"; // Replace with real emergency contact
+
+      const smsLink = `sms:${phoneNumber}?body=${encodeURIComponent(message)}`;
+      window.location.href = smsLink;
+    } else {
+      alert("Location not available yet. Please click 'Get Location' first.");
+    }
+  }
+</script>
 </body>
 </html>
